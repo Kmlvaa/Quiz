@@ -14,7 +14,7 @@ namespace Quizz.Controllers
 		{
 			_appDbContext = dbContext;
 		}
-		[HttpPut]
+		[HttpPut("{id}")]
 		public IActionResult Put(int id,[FromBody] QuestionPutDto dto)
 		{
 			var question = _appDbContext.Questiones.FirstOrDefault(x => x.Id == id);
