@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Quizz.Data;
@@ -19,6 +20,7 @@ namespace Quizz.Controllers
 			_mapper = mapper;
 		}
 		[HttpPut("{id}")]
+		[Authorize(Roles = "Admin")]
 		public IActionResult Put(int id,[FromBody] QuestionPutDto dto)
 		{
 			var question = _appDbContext.Questiones.FirstOrDefault(x => x.Id == id);

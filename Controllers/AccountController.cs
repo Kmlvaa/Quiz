@@ -17,12 +17,14 @@ namespace Quizz.Controllers
 		private readonly UserManager<AppUser> _userManager;
 		private readonly SignInManager<AppUser> _signInManager;
 		private readonly IConfiguration _configuration;
+		private readonly IMapper _mapper;
 
-		public AccountController(UserManager<AppUser> manager, SignInManager<AppUser> signInManager, IConfiguration configuration)
+		public AccountController(UserManager<AppUser> manager, SignInManager<AppUser> signInManager, IConfiguration configuration, IMapper mapper)
         {
 			_userManager = manager;
 			_signInManager = signInManager;
 			_configuration = configuration;
+			_mapper = mapper;
         }
         [HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -31,20 +33,13 @@ namespace Quizz.Controllers
 
 			if(!result.Succeeded) return BadRequest(result.ToString());
 
-			var token = GetToken();
 
-			return Ok(token);
+			return Ok();
 		}
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register([FromBody] RegisterDto dto)
 		{
-			var user = new AppUser()
-			{
-				FirstName = dto.FirstName,
-				LastName = dto.LastName,
-				UserName = dto.Username,
-				Email = dto.Email
-			};
+			var user = _mapper.Map<RegisterDto, AppUser> (dto);
 
 			var result = await _userManager.CreateAsync(user, dto.Password);
 

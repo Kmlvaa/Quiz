@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ namespace Quizz.Controllers
 			return Ok(list);
 		}
 		[HttpGet("GetById/{id}")]
+		[Authorize]
 		public IActionResult GetById(int id)
 		{
 			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
@@ -84,6 +86,7 @@ namespace Quizz.Controllers
 			return Ok(dto);
 		}
 		[HttpPost("Post")]
+		[Authorize(Roles = "Admin")]
 		public IActionResult Post([FromBody] QuizPostDTO quizDto)
 		{
 			var quiz = new Quiz();
@@ -108,6 +111,7 @@ namespace Quizz.Controllers
 			return Ok();
 		}
 		[HttpPut("Put/{id}")]
+		[Authorize(Roles = "Admin")]
 		public IActionResult Put(int id, [FromBody] QuizPutDto dto)
 		{
 			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
@@ -121,6 +125,7 @@ namespace Quizz.Controllers
 			return Ok();
 		}
 		[HttpDelete("Delete/{id}")]
+		[Authorize(Roles = "Admin")]
 		public IActionResult Delete(int id)
 		{
 			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
