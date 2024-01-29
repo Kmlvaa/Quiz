@@ -23,6 +23,7 @@ namespace Quizz.Controllers
 		}
 
 		[HttpGet("GetAll")]
+		[Authorize]
 		public IActionResult GetAll()
 		{
 			var quizzes = _appDbContext.Quizzes.ToList();
@@ -42,67 +43,19 @@ namespace Quizz.Controllers
 		[Authorize]
 		public IActionResult GetById(int id)
 		{
-			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
-			if (quiz is null) return NotFound();
+			var quiz = _appDbContext.Quizzes.Include(x => x.Questions).ThenInclude(x => x.Options).SingleOrDefault(x => x.Id == id);
 
-			var questions = _appDbContext.Questiones
-				.Include(x => x.Options)
-				.Where(x => x.QuizId == id).ToList();
+			if (quiz == null) return NotFound();
 
-			if (questions is null) return NotFound();
-
-			var optionList = new List<OptionGetDto>();
-			
-			var list = new List<QuestionGetDto>();
-
-
-			for(int i = 0; i < questions.Count; i++)
-			{
-				list.Add(new QuestionGetDto()
-				{
-					Id = questions[i].Id,
-					Name = questions[i].Name,
-					Points = questions[i].Points,
-					Options = new List<OptionGetDto>
-					{
-						new OptionGetDto()
-						{
-							Name = questions[i].Options[i].Name,
-							IsCorrect = questions[i].Options[i].IsCorrect
-						}
-					}
-				});
-
-			}
-
-			var dto = new QuizGetDetailsDto()
-			{
-				Id = id,
-				Name = quiz.Name,
-				CreationDate = quiz.CreationDate,
-				Questions = list
-			};
+			var dto = _mapper.Map<QuizGetDetailsDto>(quiz);
 
 			return Ok(dto);
 		}
 		[HttpPost("Post")]
 		[Authorize(Roles = "Admin")]
-		public IActionResult Post([FromBody] QuizPostDTO quizDto)
+		public IActionResult Post([FromBody] QuizPostDto dto)
 		{
-			var quiz = new Quiz();
-
-			quiz.Name = quizDto.Name;
-			quiz.CreationDate = quizDto.CreationDate;
-			for(int i = 0; i < quizDto.QuestionPost.Count; i++)
-			{
-				quiz.Questions.Add(new Question
-				{
-					Name = quizDto.QuestionPost[i].Name,
-					Points = quizDto.QuestionPost[i].Points,
-					QuizId = quizDto.Id,
-
-				});
-			}
+			var quiz = _mapper.Map<QuizPostDto, Quiz>(dto);
 
 			_appDbContext.Add(quiz);
 

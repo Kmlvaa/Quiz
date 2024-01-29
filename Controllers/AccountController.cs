@@ -29,12 +29,17 @@ namespace Quizz.Controllers
         [HttpPost("Login")]
 		public async Task<IActionResult> Login([FromBody] LoginDto dto)
 		{
+			var existingUser = await _userManager.FindByNameAsync(dto.UserName);
+
+			if (existingUser == null) return NotFound();
+
 			var result = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, false, false);
 
 			if(!result.Succeeded) return BadRequest(result.ToString());
 
+			var token = GetToken();
 
-			return Ok();
+			return Ok(token);
 		}
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register([FromBody] RegisterDto dto)

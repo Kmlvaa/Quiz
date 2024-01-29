@@ -1,6 +1,6 @@
 ﻿namespace Quizz.DTO.QuizDTO
 {
-    public class QuizPostDTO
+    public class QuizPostDto
     {
 		public int Id { get; set; }
 		public string Name { get; set; }

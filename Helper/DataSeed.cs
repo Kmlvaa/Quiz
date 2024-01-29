@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Quizz.Data;
 using Quizz.Entities;
+using System.Data;
 
 namespace P335_BackEnd.Helper
 {
@@ -35,7 +36,7 @@ namespace P335_BackEnd.Helper
 				};
 
 				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-				var existingUser = await userManager.FindByNameAsync("admin@mail.com");
+				var existingUser = await userManager.FindByNameAsync("Admin");
 				if (existingUser is not null) return;
 
 				await userManager.CreateAsync(user, "admin12345");
