@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Quizz.Migrations
 {
-    public partial class First : Migration
+    public partial class EntitiesAdded : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -252,14 +252,14 @@ namespace Quizz.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Options_QuestionId",
-                table: "Options",
-                column: "QuestionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Questiones_QuizId",
                 table: "Questiones",
                 column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Options_QuestionId",
+                table: "Options",
+                column: "QuestionId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

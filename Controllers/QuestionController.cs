@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Quizz.Data;
 using Quizz.DTO;
+using Quizz.Entities;
 
 namespace Quizz.Controllers
 {
@@ -10,9 +12,11 @@ namespace Quizz.Controllers
 	public class QuestionController : ControllerBase
 	{
 		private readonly AppDbContext _appDbContext;
-		public QuestionController(AppDbContext dbContext)
+		private readonly IMapper _mapper;
+		public QuestionController(AppDbContext dbContext, IMapper mapper)
 		{
 			_appDbContext = dbContext;
+			_mapper = mapper;
 		}
 		[HttpPut("{id}")]
 		public IActionResult Put(int id,[FromBody] QuestionPutDto dto)
@@ -20,8 +24,7 @@ namespace Quizz.Controllers
 			var question = _appDbContext.Questiones.FirstOrDefault(x => x.Id == id);
 			if (question == null) return NotFound();
 
-			question.Name = dto.Name;
-			question.Points = dto.Points;
+			_mapper.Map(dto, question);
 
 			_appDbContext.Update(question);
 			_appDbContext.SaveChanges();

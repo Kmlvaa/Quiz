@@ -3,6 +3,5 @@
     public class QuizPutDto
     {
 		public string Name { get; set; }
-		public DateTime CreationDate { get; set; }
 	}
 }

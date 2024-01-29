@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Quizz.Data;
 using Quizz.Entities;
+using System.Text;
 
 namespace Quizz
 {
@@ -16,6 +19,7 @@ namespace Quizz
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+			builder.Services.AddAutoMapper(typeof(Program));
 
 			builder.Services.AddDbContext<AppDbContext>(opt =>
 			{
@@ -29,7 +33,23 @@ namespace Quizz
 				opt.Password.RequireUppercase = false;
 				opt.Password.RequireLowercase = false;
 			}).AddEntityFrameworkStores<AppDbContext>();
+
 			builder.Services.AddSwaggerGen();
+
+			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+			.AddJwtBearer(options =>
+			{
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					ValidIssuer = builder.Configuration["Jwt:Issuer"],
+					ValidAudience = builder.Configuration["Jwt:Issuer"],
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+				};
+			});
 
 			var app = builder.Build();
 

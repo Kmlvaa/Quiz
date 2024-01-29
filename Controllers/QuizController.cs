@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Quizz.Data;
 using Quizz.DTO;
 using Quizz.DTO.QuizDTO;
@@ -12,9 +14,11 @@ namespace Quizz.Controllers
 	public class QuizController : ControllerBase
 	{
 		private readonly AppDbContext _appDbContext;
-		public QuizController(AppDbContext dbContext)
+		private readonly IMapper _mapper;
+		public QuizController(AppDbContext dbContext, IMapper mapper)
 		{
 			_appDbContext = dbContext;
+			_mapper = mapper;
 		}
 
 		[HttpGet("GetAll")]
@@ -23,15 +27,12 @@ namespace Quizz.Controllers
 			var quizzes = _appDbContext.Quizzes.ToList();
 			if(quizzes is null) { return NotFound(); }
 
-			List<QuizGetDto> list = new List<QuizGetDto>();
+			var list = new List<QuizGetDto>();
 
 			foreach (var quiz in quizzes)
 			{
-				list.Add(new QuizGetDto()
-				{
-					Name = quiz.Name,
-					CreationDate = quiz.CreationDate,
-				});
+				var dto = _mapper.Map<Quiz,QuizGetDto>(quiz);
+				list.Add(dto);
 			}
 
 			return Ok(list);
@@ -42,29 +43,34 @@ namespace Quizz.Controllers
 			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
 			if (quiz is null) return NotFound();
 
-			var questions = _appDbContext.Questiones.Where(x => x.QuizId == id).ToList();
+			var questions = _appDbContext.Questiones
+				.Include(x => x.Options)
+				.Where(x => x.QuizId == id).ToList();
+
 			if (questions is null) return NotFound();
 
-			//var optionList = new List<OptionGetDto>();
-			//foreach (var question in questions)
-			//{
-			//	var options = _appDbContext.Options.Where(x => x.QuestionId == question.Id);
-			//	optionList.Add(new OptionGetDto()
-			//	{
-			//		Id = 
-			//	};
-			//}
-
+			var optionList = new List<OptionGetDto>();
+			
 			var list = new List<QuestionGetDto>();
 
-			foreach(var que in questions)
+
+			for(int i = 0; i < questions.Count; i++)
 			{
 				list.Add(new QuestionGetDto()
 				{
-					Id = que.Id,
-					Name = que.Name,
-					Points = que.Points
+					Id = questions[i].Id,
+					Name = questions[i].Name,
+					Points = questions[i].Points,
+					Options = new List<OptionGetDto>
+					{
+						new OptionGetDto()
+						{
+							Name = questions[i].Options[i].Name,
+							IsCorrect = questions[i].Options[i].IsCorrect
+						}
+					}
 				});
+
 			}
 
 			var dto = new QuizGetDetailsDto()
@@ -77,30 +83,50 @@ namespace Quizz.Controllers
 
 			return Ok(dto);
 		}
-		[HttpPost]
-		public IActionResult Post([FromBody] QuizPostDTO dto)
+		[HttpPost("Post")]
+		public IActionResult Post([FromBody] QuizPostDTO quizDto)
 		{
 			var quiz = new Quiz();
 
-			quiz.Name = dto.Name;
-			quiz.CreationDate = dto.CreationDate;
+			quiz.Name = quizDto.Name;
+			quiz.CreationDate = quizDto.CreationDate;
+			for(int i = 0; i < quizDto.QuestionPost.Count; i++)
+			{
+				quiz.Questions.Add(new Question
+				{
+					Name = quizDto.QuestionPost[i].Name,
+					Points = quizDto.QuestionPost[i].Points,
+					QuizId = quizDto.Id,
+
+				});
+			}
 
 			_appDbContext.Add(quiz);
-			              
+
 			_appDbContext.SaveChanges();
 
 			return Ok();
 		}
-		[HttpPut("{id}")]
+		[HttpPut("Put/{id}")]
 		public IActionResult Put(int id, [FromBody] QuizPutDto dto)
 		{
 			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
 			if (quiz == null) return NotFound();
 
-			quiz.Name = dto.Name;
-			quiz.CreationDate = dto.CreationDate;
+			_mapper.Map(dto, quiz);
 
 			_appDbContext.Update(quiz);
+			_appDbContext.SaveChanges();
+
+			return Ok();
+		}
+		[HttpDelete("Delete/{id}")]
+		public IActionResult Delete(int id)
+		{
+			var quiz = _appDbContext.Quizzes.FirstOrDefault(x => x.Id == id);
+			if(quiz == null) return NotFound();	
+
+			_appDbContext.Quizzes.Remove(quiz);
 			_appDbContext.SaveChanges();
 
 			return Ok();

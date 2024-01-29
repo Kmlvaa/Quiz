@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\samiraak\\source\\repos\\Quizz\\Quizz\\Quizz.csproj": {}
+    "C:\\Users\\User\\Desktop\\Quiz\\Quizz.csproj": {}
   },
   "projects": {
-    "C:\\Users\\samiraak\\source\\repos\\Quizz\\Quizz\\Quizz.csproj": {
+    "C:\\Users\\User\\Desktop\\Quiz\\Quizz.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\samiraak\\source\\repos\\Quizz\\Quizz\\Quizz.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Desktop\\Quiz\\Quizz.csproj",
         "projectName": "Quizz",
-        "projectPath": "C:\\Users\\samiraak\\source\\repos\\Quizz\\Quizz\\Quizz.csproj",
-        "packagesPath": "C:\\Users\\samiraak\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\samiraak\\source\\repos\\Quizz\\Quizz\\obj\\",
+        "projectPath": "C:\\Users\\User\\Desktop\\Quiz\\Quizz.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Desktop\\Quiz\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\samiraak\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -44,6 +40,22 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.9.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[6.0.26, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.26, )"
